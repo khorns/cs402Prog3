@@ -63,15 +63,26 @@ public class Prog3 {
 
         //
         double learnSpeed = 0.01;
+        double[][] weight = new double[23][7];
+        weightInit(weight);
 
-        double number = 0.755;
-
-        double result = sigmoid(number);
 
         System.out.println("Hello World");
 
     }
 
+    /**
+     * Weight initialization between 0.1 - 0.9
+     * @param weight
+     */
+    private static void weightInit(double[][] weight) {
+        Random random = new Random();
+        for (int i = 0; i < 23; i++) {
+            for (int j = 0; j < 7; j++) {
+                weight[i][j] = 0.1 + (0.9-0.1) * random.nextDouble();
+            }
+        }
+    }
 
     /**
      * Sigmoid function
