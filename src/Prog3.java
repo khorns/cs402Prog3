@@ -9,6 +9,7 @@ public class Prog3 {
     private static final int trainSize = 6900;
     private static final int testSize = 1224;
 
+
     public static void  main (String[] args) throws IOException{
 
         String[] rawData;
@@ -61,10 +62,12 @@ public class Prog3 {
         }
 
 
-        //
+        // Init Weight
         double learnSpeed = 0.01;
-        double[][] weight = new double[23][7];
-        weightInit(weight);
+        double[][] weight1 = new double[23][7];
+        double[][] weight2 = new double[7][3];
+        weightInit(weight1, 23, 7);
+        weightInit(weight2, 7, 3);
 
 
         System.out.println("Hello World");
@@ -75,10 +78,10 @@ public class Prog3 {
      * Weight initialization between 0.1 - 0.9
      * @param weight weight to update with random number
      */
-    private static void weightInit(double[][] weight) {
+    private static void weightInit(double[][] weight, int iSize, int jSize) {
         Random random = new Random();
-        for (int i = 0; i < 23; i++) {
-            for (int j = 0; j < 7; j++) {
+        for (int i = 0; i < iSize; i++) {
+            for (int j = 0; j < jSize; j++) {
                 weight[i][j] = 0.1 + (0.9-0.1) * random.nextDouble();
             }
         }
