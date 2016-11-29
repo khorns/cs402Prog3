@@ -73,7 +73,7 @@ public class Prog3 {
 
     /**
      * Weight initialization between 0.1 - 0.9
-     * @param weight
+     * @param weight weight to update with random number
      */
     private static void weightInit(double[][] weight) {
         Random random = new Random();
@@ -102,23 +102,17 @@ public class Prog3 {
         String[] rawData = new String[nData];
         int index = 0;
 
-        BufferedReader br = new BufferedReader(new FileReader("mushroom.data"));
-        try {
-            StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader("mushroom.data"))) {
             String line = br.readLine();
             rawData[index] = line;
             index++;
             while (line != null) {
-                sb.append(line);
-                sb.append(System.lineSeparator());
                 line = br.readLine();
                 rawData[index] = line;
                 index++;
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            br.close();
         }
         return rawData;
     }
