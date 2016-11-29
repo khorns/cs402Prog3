@@ -1,13 +1,13 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Objects;
+import java.util.*;
 
 public class Prog3 {
 
     private static final int nData = 8125;
-    private static final int trainSize = 6000;
-    private static final int testSize = 2124;
+    private static final int trainSize = 6900;
+    private static final int testSize = 1224;
 
     public static void  main (String[] args) throws IOException{
 
@@ -38,17 +38,17 @@ public class Prog3 {
 
 
         // Divide into train set (6000) and test set (2124)
-        int[] trainY = new int[trainSize];
-        int[][] trainX = new int[trainSize][23];
+        double[] trainY = new double[trainSize];
+        double[][] trainX = new double[trainSize][23];
 
-        int[] testY = new int[testSize];
-        int[][] testX = new int[testSize][23];
+        double[] testY = new double[testSize];
+        double[][] testX = new double[testSize][23];
 
         for (int i = 0; i < trainSize; i++) {
             trainY[i] = nOutput[i];
 
             for (int j = 0; j < 23; j++) {
-                trainX[i][j] = nInput[i][j];
+                trainX[i][j] = (double) nInput[i][j] / 100;
             }
         }
 
@@ -56,7 +56,7 @@ public class Prog3 {
             testY[i] = nOutput[i+trainSize];
 
             for (int j = 0; j < 23; j++) {
-                testX[i][j] = nInput[i+trainSize][j];
+                testX[i][j] = (double) nInput[i+trainSize][j] / 100;
             }
         }
 
