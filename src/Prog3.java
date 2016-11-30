@@ -15,30 +15,16 @@ public class Prog3 {
         String[] rawData;
         rawData = readFile();
 
-        String[] output = new String[nData-1];
+//        String[] output = new String[nData-1];
         int[] nOutput = new int[nData-1];
         int[][] nInput = new int[nData-1][23];
 
         // Separate data to input and output, then normalized them to integer representation
-        for (int i = 0; i < nData-1; i++) {
-            String[] data = rawData[i].split(",");
-
-            // 1 is eatable, 0 is poisonous
-            if (Objects.equals(data[0], "e"))
-                nOutput[i] = 1;
-            else
-                nOutput[i] = 0;
-            output[i] = data[0];
-
-            // Constructing input feature of 8124x23
-            for (int j = 0; j < 23; j++) {
-                char c = data[j].charAt(0);
-                nInput[i][j] = c;
-            }
-        }
+        separate(rawData, nOutput, nInput);
 
 
-        // Divide into train set (6000) and test set (2124)
+
+        // Divide into train set (6900) and test set (1224)
         double[] trainY = new double[trainSize];
         double[][] trainX = new double[trainSize][23];
 
@@ -66,11 +52,39 @@ public class Prog3 {
         double learnSpeed = 0.01;
         double[][] weight1 = new double[23][7];
         double[][] weight2 = new double[7][3];
+        double[][] weight3 = new double[3][1];
         weightInit(weight1, 23, 7);
         weightInit(weight2, 7, 3);
+        weightInit(weight3, 3, 1);
+
+        // Hidden Layer
+        double[] h1 = new double[7];
+        double[] h2 = new double[3];
+        double[] output = new double[1];
 
 
         System.out.println("Hello World");
+
+    }
+
+
+    private static void separate(String[] rawData, int[] nOutput, int[][] nInput) {
+        for (int i = 0; i < nData-1; i++) {
+            String[] data = rawData[i].split(",");
+
+            // 1 is eatable, 0 is poisonous
+            if (Objects.equals(data[0], "e"))
+                nOutput[i] = 1;
+            else
+                nOutput[i] = 0;
+            //  output[i] = data[0];
+
+            // Constructing input feature of 8124x23
+            for (int j = 0; j < 23; j++) {
+                char c = data[j].charAt(0);
+                nInput[i][j] = c;
+            }
+        }
 
     }
 
