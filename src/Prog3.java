@@ -32,7 +32,7 @@ public class Prog3 {
         divideTrainingTest(trainY, trainX, testY, testX, nOutput, nInput);
 
         // Init Weight
-        double learnRate = 0.01;
+        double learnRate = 0.005;
         double[][] weight1 = new double[22][7];
         double[][] weight2 = new double[7][3];
         double[][] weight3 = new double[3][1];
@@ -43,80 +43,101 @@ public class Prog3 {
         // Hidden Layer
         double[] h1 = new double[7];
         double[] h2 = new double[3];
-        double output = 0.0;
+        double output;
         double temp = 0.0;
         int count = 0;
+        double accurate;
         double delta1;
+        double[] delta2 = new double[3];
+        double[] delta3 = new double[7];
 
 
         // Calculate Back Propagation
-
-        for (int k = 0; k < trainSize; k++) {
-            // h1
-            for (int i = 0; i < 7; i++) {
-                for (int j = 0; j < 22; j++) {
-//                    temp += trainX[0][j] * weight1[j][i];
-                    temp += trainX[k][j] * weight1[j][i];
-                }
-                temp = sigmoid(temp);
-                h1[i] = temp;
-                temp = 0;
-            }
-
-            // h2
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 7; j++) {
-                    temp += h1[j] * weight2[j][i];
-                }
-                temp = sigmoid(temp);
-                h2[i] = temp;
-                temp = 0;
-            }
-
-            // output
-            for (int i = 0; i < 3; i++) {
-                temp += h2[i] * weight3[i][0];
-            }
-            temp = sigmoid(temp);
-            output = temp;
-            temp = 0;
-//            System.out.println(output);
-
-            // Back Propagation
-            double check;
-            if (output < 0.5)
-                check = 0.0;
-            else
-                check = 1.0;
-
-            if (check == trainY[k]) {
-                count++;
-            }
-            else { // Perform Back Propagation
-                // delta1
-                delta1 = output * (1 - output) * (trainY[k] - output);
-                for (int i = 0; i < 3; i++) {
-                    weight3[i][0] = weight3[i][0] + (learnRate * delta1 * output);
+        for (int l = 0; l < 10000; l++) {
+            for (int k = 0; k < trainSize; k++) {
+                // h1
+                for (int i = 0; i < 7; i++) {
+                    for (int j = 0; j < 22; j++) {
+                        temp += trainX[k][j] * weight1[j][i];
+                    }
+                    temp = sigmoid(temp);
+                    h1[i] = temp;
+                    temp = 0;
                 }
 
-                // delta2
-                double[] delta2 = new double[3];
+                // h2
                 for (int i = 0; i < 3; i++) {
                     for (int j = 0; j < 7; j++) {
-                        delta2[i] = h2[i] * (1 - h2[i]) * (delta1 * weight3[i][0]);
+                        temp += h1[j] * weight2[j][i];
                     }
+                    temp = sigmoid(temp);
+                    h2[i] = temp;
+                    temp = 0;
                 }
 
+                // output
+                for (int i = 0; i < 3; i++) {
+                    temp += h2[i] * weight3[i][0];
+                }
+                temp = sigmoid(temp);
+                output = temp;
+                temp = 0;
+
+                // Back Propagation
+                double check;
+                if (output < 0.5)
+                    check = 0.0;
+                else
+                    check = 1.0;
+
+                if (check == trainY[k]) {
+                    count++;
+                } else { // Perform Back Propagation
+                    // delta1 and weight1
+                    delta1 = output * (1 - output) * (trainY[k] - output);
+                    for (int i = 0; i < 3; i++) {
+                        weight3[i][0] = weight3[i][0] + (learnRate * delta1 * output);
+                    }
+
+                    // delta2 and weight2
+                    for (int i = 0; i < 3; i++) {
+                        delta2[i] = h2[i] * (1 - h2[i]) * (delta1 * weight3[i][0]);
+                        for (int j = 0; j < 7; j++) {
+                            weight2[j][i] = weight2[j][i] + (learnRate * delta2[i] * h2[i]);
+                        }
+                    }
+
+                    // delta3 and weight3
+                    double sum = 0;
+                    for (int i = 0; i < 7; i++) {
+                        for (int j = 0; j < 3; j++) {
+                            sum += delta2[j] * weight2[i][j];
+                        }
+                        delta3[i] = h1[i] * (1 - h1[i]) * sum;
+                        for (int j = 0; j < 22; j++) {
+                            weight1[j][i] = weight1[j][i] + (learnRate * delta3[i] * h1[i]);
+                        }
+                    }
+                }
             }
-
+            accurate = (double) count / (double) trainSize;
+            count = 0;
+            if (l % 100 == 0)
+                System.out.println("Epoch " + l + " = " +  accurate);
         }
-
-
         System.out.println("Hello World");
 
     }
 
-
+    /**
+     * Divide data into training data and testing data
+     * @param trainY train output Y
+     * @param trainX train input X
+     * @param testY test output Y
+     * @param testX test input X
+     * @param nOutput original output Y
+     * @param nInput original output X
+     */
     private static void divideTrainingTest (double[] trainY, double[][] trainX, double[] testY, double[][] testX, int[] nOutput, int[][] nInput) {
         for (int i = 0; i < trainSize; i++) {
             trainY[i] = nOutput[i];
@@ -134,6 +155,12 @@ public class Prog3 {
 
     }
 
+    /**
+     * Separate rawData into integer representation of features and output
+     * @param rawData Original datas
+     * @param nOutput Output Y
+     * @param nInput Input features X
+     */
     private static void separate(String[] rawData, int[] nOutput, int[][] nInput) {
         for (int i = 0; i < nData-1; i++) {
             String[] data = rawData[i].split(",");
@@ -151,7 +178,6 @@ public class Prog3 {
                 nInput[i][j-1] = c;
             }
         }
-
     }
 
     /**
