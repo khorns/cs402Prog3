@@ -53,6 +53,7 @@ public class Prog3 {
         weightInit(weight2, 7, 3);
         weightInit(weight3, 3, 1);
         double accuracy;
+        double accuracyTest;
 
         // Perform ANN Back Propagation
         accuracy = ANN(weight1, weight2, weight3, trainX, trainY);
@@ -63,7 +64,8 @@ public class Prog3 {
         // Training data
         System.out.println("\nTraining accuracy: " + accuracy);
         // Testing data
-        testAccurate(weight1, weight2, weight3, testX, testY);
+        accuracyTest = testAccurate(weight1, weight2, weight3, testX, testY);
+        System.out.println("Testing accuracy: " + accuracyTest);
     }
 
 
@@ -75,7 +77,7 @@ public class Prog3 {
      * @param testX test features X
      * @param testY test output Y
      */
-    private static void testAccurate(double[][] weight1, double[][] weight2, double[][] weight3, double[][] testX, double[] testY) {
+    private static double testAccurate(double[][] weight1, double[][] weight2, double[][] weight3, double[][] testX, double[] testY) {
         double[] h1 = new double[7];
         double[] h2 = new double[3];
         double output;
@@ -122,7 +124,7 @@ public class Prog3 {
             }
         }
         accurate = (double) count / (double) testSize;
-        System.out.println("Testing accuracy: " + accurate);
+        return accurate;
     }
 
 
@@ -152,7 +154,7 @@ public class Prog3 {
         int count = 0;
 
         // Processing ANN
-        while ((worstCount < stop) && (epoch < max)) {        // End if doing worst by the worstCount or epoch is greater than max
+        while ((worstCount < stop) && (epoch < max)) {        // End if doing worst by the worstCount >= STOP or epoch is greater than max
             // Forward
             for (int k = 0; k < trainSize; k++) {
                 // h1

@@ -1,0 +1,13 @@
+Sereyvathanak Khorn
+CSCI 402
+Assignment 3: Classify Mushrooms
+
+
+
+
+a) A text document file to explain your approach and discussion of the problems and results:
+    I/O, topology, parameter changes, speed, accuracy, etc...
+b) Script file capture both randomly generated weights and the result weights for all layers for each epoch
+c)  The programd) Output should be clearly shows the test result with standard I/O
+e) ReadMe file
+f) Using FirstNameLastNameAsmt3.zip
