@@ -8,7 +8,9 @@ public class Prog3 {
     private static final int nData = 8125;
     private static final int trainSize = 6900;
     private static final int testSize = 1224;
-    private static final double learnRate = 0.005;
+    private static final double learnRate = 0.0005;
+    private static final int stop = 5;
+    private static final int max = 10000;
 
 
     public static void  main (String[] args) throws IOException{
@@ -33,28 +35,143 @@ public class Prog3 {
         divideTrainingTest(trainY, trainX, testY, testX, nOutput, nInput);
 
         // Init Weight
-
         double[][] weight1 = new double[22][7];
         double[][] weight2 = new double[7][3];
         double[][] weight3 = new double[3][1];
         weightInit(weight1, 22, 7);
         weightInit(weight2, 7, 3);
         weightInit(weight3, 3, 1);
+        double accuracy;
 
+        // Perform ANN Back Propagation
+        accuracy = ANN(weight1, weight2, weight3, trainX, trainY);
+
+        // Print the weights
+        printWeight(weight1, weight2, weight3);
+
+        // Training data
+        System.out.println("\nTraining accuracy: " + accuracy);
+        // Testing data
+        testAccurate(weight1, weight2, weight3, testX, testY);
+    }
+
+
+    /**
+     * Perform accurate test on the test set
+     * @param weight1 w1
+     * @param weight2 w2
+     * @param weight3 w3
+     * @param testX test features X
+     * @param testY test output Y
+     */
+    private static void testAccurate(double[][] weight1, double[][] weight2, double[][] weight3, double[][] testX, double[] testY) {
+        double[] h1 = new double[7];
+        double[] h2 = new double[3];
+        double output;
+        double temp = 0.0;
+        double accurate;
+        int count = 0;
+
+        for (int k = 0; k < testSize; k++) {
+            // h1
+            for (int i = 0; i < 7; i++) {
+                for (int j = 0; j < 22; j++) {
+                    temp += testX[k][j] * weight1[j][i];
+                }
+                h1[i] = sigmoid(temp);
+                temp = 0;
+            }
+
+            // h2
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 7; j++) {
+                    temp += h1[j] * weight2[j][i];
+                }
+                h2[i] = sigmoid(temp);
+                temp = 0;
+            }
+
+            // output
+            for (int i = 0; i < 3; i++) {
+                temp += h2[i] * weight3[i][0];
+            }
+            output = sigmoid(temp);
+            temp = 0;
+
+            double check;
+            if (output < 0.5)
+                check = 0.0;
+            else
+                check = 1.0;
+
+            if (check == testY[k]) {
+                count++;
+            }
+        }
+        accurate = (double) count / (double) testSize;
+        System.out.println("Testing accuracy: " + accurate);
+    }
+
+    /**
+     * Print all model: Weight1, Weight2, Weight3
+     * @param weight1 w1
+     * @param weight2 w2
+     * @param weight3 w3
+     */
+    private static void printWeight(double[][] weight1, double[][] weight2, double[][] weight3) {
+        System.out.println("\n-----Weight 1-----");
+        for (double[] aWeight1 : weight1) {
+            for (double anAWeight1 : aWeight1) {
+                System.out.format("%6.3f ", anAWeight1);
+            }
+            System.out.println();
+        }
+
+        System.out.println("\n-----Weight 2-----");
+        for (double[] aWeight2 : weight2) {
+            for (double anAWeight2 : aWeight2) {
+                System.out.format("%6.3f ", anAWeight2);
+            }
+            System.out.println();
+        }
+
+        System.out.println("\n-----Weight 3-----");
+        for (double[] aWeight3 : weight3) {
+            for (double anAWeight3 : aWeight3) {
+                System.out.format("%6.3f ", anAWeight3);
+            }
+            System.out.println();
+        }
+    }
+
+
+    /**
+     * Perform ANN Back Propagation
+     * @param weight1 w1
+     * @param weight2 w2
+     * @param weight3 w3
+     * @param trainX training features X
+     * @param trainY training output Y
+     * @return The accuracy of the training set
+     */
+    private static double ANN(double[][] weight1, double[][] weight2, double[][] weight3, double[][] trainX, double[] trainY) {
         // Hidden Layer
         double[] h1 = new double[7];
         double[] h2 = new double[3];
         double output;
         double temp = 0.0;
-        int count = 0;
-        double accurate;
+        double prevAccurate = 0;
         double delta1;
         double[] delta2 = new double[3];
         double[] delta3 = new double[7];
+        double accurate = 0;
 
+        int worstCount = 0;
+        int epoch = 0;
+        int count = 0;
 
         // Processing ANN
-        for (int l = 0; l < 10000; l++) {
+        while ((worstCount < stop) && (worstCount < max)) {        // End if doing worst by the worstCount
             // Forward
             for (int k = 0; k < trainSize; k++) {
                 // h1
@@ -122,11 +239,21 @@ public class Prog3 {
             }
             accurate = (double) count / (double) trainSize;
             count = 0; // reset count
-            if (l % 50 == 0)
-                System.out.println("Epoch " + l + " = " +  accurate);
-        }
-        System.out.println("Hello World");
+            epoch++;
 
+            // Look for stop point where it will increment +1 to worstCount if this Epoch is doing worst than the previous one
+            if (accurate < prevAccurate) {
+                worstCount++;
+            }
+            else {
+                worstCount = 0;
+            }
+            prevAccurate = accurate;
+
+            // Print Accuracy
+            System.out.println("Epoch " + epoch + " : " + accurate);
+        }
+        return accurate;
     }
 
     /**
@@ -152,7 +279,6 @@ public class Prog3 {
                 testX[i][j] = (double) nInput[i+trainSize][j] / 100;
             }
         }
-
     }
 
     /**
@@ -188,7 +314,6 @@ public class Prog3 {
         Random random = new Random();
         for (int i = 0; i < iSize; i++) {
             for (int j = 0; j < jSize; j++) {
-//                weight[i][j] = 0.1 + (0.9-0.1) * random.nextDouble();
                 weight[i][j] = -0.9 + (0.9+0.9) * random.nextDouble();
 //                weight[i][j] = -2 + 4 * random.nextDouble();
 
