@@ -1,3 +1,11 @@
+/**
+ * Sereyvathanak Khorn
+ * CSCI 402
+ * Program 3
+ *
+ * ANN Back Propagation on mushroom data to determine if a mushroom is poisonous or eatable.
+ */
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -5,20 +13,23 @@ import java.util.*;
 
 public class Prog3 {
 
-    private static final int nData = 8125;
-    private static final int trainSize = 6900;
-    private static final int testSize = 1224;
-    private static final double learnRate = 0.0005;
-    private static final int stop = 5;
-    private static final int max = 10000;
+    private static final int nData = 8125;              // Data size
+    private static final int trainSize = 6900;          // train data size - 85%
+    private static final int testSize = 1224;           // test data size - 15%
+    private static final double learnRate = 0.0005;     // Learn rate
+    private static final int stop = 5;                  // Count for training to stop early
+    private static final int max = 10000;               // MAX Epoch iteration
 
 
-    public static void  main (String[] args) throws IOException{
-
+    /**
+     * Program main
+     * @param args arguments
+     * @throws IOException Input/Output exception
+     */
+    public static void main (String[] args) throws IOException{
         String[] rawData;
         rawData = readFile();
 
-//        String[] output = new String[nData-1];
         int[] nOutput = new int[nData-1];
         int[][] nInput = new int[nData-1][22];
 
@@ -98,50 +109,20 @@ public class Prog3 {
             output = sigmoid(temp);
             temp = 0;
 
+            // Normalized output to either 1 or 0
             double check;
             if (output < 0.5)
                 check = 0.0;
             else
                 check = 1.0;
 
+            // Check data
             if (check == testY[k]) {
                 count++;
             }
         }
         accurate = (double) count / (double) testSize;
         System.out.println("Testing accuracy: " + accurate);
-    }
-
-    /**
-     * Print all model: Weight1, Weight2, Weight3
-     * @param weight1 w1
-     * @param weight2 w2
-     * @param weight3 w3
-     */
-    private static void printWeight(double[][] weight1, double[][] weight2, double[][] weight3) {
-        System.out.println("\n-----Weight 1-----");
-        for (double[] aWeight1 : weight1) {
-            for (double anAWeight1 : aWeight1) {
-                System.out.format("%6.3f ", anAWeight1);
-            }
-            System.out.println();
-        }
-
-        System.out.println("\n-----Weight 2-----");
-        for (double[] aWeight2 : weight2) {
-            for (double anAWeight2 : aWeight2) {
-                System.out.format("%6.3f ", anAWeight2);
-            }
-            System.out.println();
-        }
-
-        System.out.println("\n-----Weight 3-----");
-        for (double[] aWeight3 : weight3) {
-            for (double anAWeight3 : aWeight3) {
-                System.out.format("%6.3f ", anAWeight3);
-            }
-            System.out.println();
-        }
     }
 
 
@@ -171,7 +152,7 @@ public class Prog3 {
         int count = 0;
 
         // Processing ANN
-        while ((worstCount < stop) && (worstCount < max)) {        // End if doing worst by the worstCount
+        while ((worstCount < stop) && (epoch < max)) {        // End if doing worst by the worstCount or epoch is greater than max
             // Forward
             for (int k = 0; k < trainSize; k++) {
                 // h1
@@ -281,6 +262,7 @@ public class Prog3 {
         }
     }
 
+
     /**
      * Separate rawData into integer representation of features and output
      * @param rawData Original datas
@@ -306,6 +288,7 @@ public class Prog3 {
         }
     }
 
+
     /**
      * Weight initialization between 0.1 - 0.9
      * @param weight weight to update with random number
@@ -321,6 +304,7 @@ public class Prog3 {
         }
     }
 
+
     /**
      * Sigmoid function
      * @param num a number to convert through sigmoid
@@ -329,6 +313,40 @@ public class Prog3 {
     private static double sigmoid(double num) {
         return 1 / (1 + Math.pow(Math.E, (-1 * num)));
     }
+
+
+    /**
+     * Print all model: Weight1, Weight2, Weight3
+     * @param weight1 w1
+     * @param weight2 w2
+     * @param weight3 w3
+     */
+    private static void printWeight(double[][] weight1, double[][] weight2, double[][] weight3) {
+        System.out.println("\n-----Weight 1-----");
+        for (double[] aWeight1 : weight1) {
+            for (double anAWeight1 : aWeight1) {
+                System.out.format("%6.3f ", anAWeight1);
+            }
+            System.out.println();
+        }
+
+        System.out.println("\n-----Weight 2-----");
+        for (double[] aWeight2 : weight2) {
+            for (double anAWeight2 : aWeight2) {
+                System.out.format("%6.3f ", anAWeight2);
+            }
+            System.out.println();
+        }
+
+        System.out.println("\n-----Weight 3-----");
+        for (double[] aWeight3 : weight3) {
+            for (double anAWeight3 : aWeight3) {
+                System.out.format("%6.3f ", anAWeight3);
+            }
+            System.out.println();
+        }
+    }
+
 
     /**
      * Read file "mushroom.data"
