@@ -2,12 +2,20 @@ Sereyvathanak Khorn
 CSCI 402
 Assignment 3: Classify Mushrooms
 
+Approach:
+    - The program reads data input and normalized them double representation.
+    - Data are slitted into 2 parts, training and testing.
+    - Initialized weight to random double number -1 to 1.
+    - Create 2 hidden layers with the first hidden layer has 7 nodes, and the 2nd layer has 3 nodes.
+    - Perform ANN Back Propagation
+        + Back Propagation happened when the output through the forward propagation fail to produce the desirable output.
+        + Adjust weight through back propagation
+    - Print all the training weights which will be use to perform a final test with the test data set.
+    - Running all test data set through the ANN with the given weight and compute the percentage accuracy.
+    - Output accuracy from the training and test.
 
-
-
-a) A text document file to explain your approach and discussion of the problems and results:
-    I/O, topology, parameter changes, speed, accuracy, etc...
-b) Script file capture both randomly generated weights and the result weights for all layers for each epoch
-c)  The programd) Output should be clearly shows the test result with standard I/O
-e) ReadMe file
-f) Using FirstNameLastNameAsmt3.zip
+Problem:
+    - Initialized could be zero which produce uninteresting result, and slow down the training process.
+    - Training data is picked from the top of 85% of the data set which ignore the bottom 15% with special "?"
+    - For the sack of time, the training stop when the output percentage is doing worst within 5 epochs or 10000 epoch is already passed.
+    - Inconsistency accuracy output between the training data set and testing data set.

@@ -55,6 +55,9 @@ public class Prog3 {
         double accuracy;
         double accuracyTest;
 
+        // Start time
+        long startTime = System.currentTimeMillis();
+
         // Perform ANN Back Propagation
         accuracy = ANN(weight1, weight2, weight3, trainX, trainY);
 
@@ -66,6 +69,10 @@ public class Prog3 {
         // Testing data
         accuracyTest = testAccurate(weight1, weight2, weight3, testX, testY);
         System.out.println("Testing accuracy: " + accuracyTest);
+
+        // End time
+        long endTime = System.currentTimeMillis();
+        System.out.println("Total time: " + ((endTime - startTime) / 1000) + " seconds");
     }
 
 
