@@ -17,8 +17,8 @@ public class Prog3 {
     private static final int nData = 8125;              // Data size
     private static final int trainSize = 6900;          // train data size - 85%
     private static final int testSize = 1224;           // test data size - 15%
-    private static double learnRate = 0.0005;     // Learn rate
-    private static final int stop = 5;                  // Count for training to stop early
+    private static double learnRate = 0.0003;     // Learn rate
+    private static final int stop = 7;                  // Count for training to stop early
     private static final int max = 1000000;               // MAX Epoch iteration
 
 
@@ -48,12 +48,10 @@ public class Prog3 {
         divideTrainingTest(trainY, trainX, testY, testX, nOutput, nInput);
 
         // Init Weight
-        double[][] weight0 = new double[22][15];
-        double[][] weight1 = new double[15][7];
+        double[][] weight1 = new double[22][7];
         double[][] weight2 = new double[7][3];
         double[][] weight3 = new double[3][1];
-        weightInit(weight0, 22, 15);
-        weightInit(weight1, 15, 7);
+        weightInit(weight1, 22, 7);
         weightInit(weight2, 7, 3);
         weightInit(weight3, 3, 1);
         double accuracy;
@@ -63,22 +61,21 @@ public class Prog3 {
         long startTime = System.currentTimeMillis();
 
         // Perform ANN Back Propagation
-        accuracy = ANN(weight0, weight1, weight2, weight3, trainX, trainY);
+        accuracy = ANN(weight1, weight2, weight3, trainX, trainY);
 
         // Print the weights
-        printWeight(weight0, weight1, weight2, weight3);
+        printWeight(weight1, weight2, weight3);
 
         // Training data
         System.out.println("\nTraining accuracy: " + accuracy);
         // Testing data
-        accuracyTest = testAccurate(weight0, weight1, weight2, weight3, testX, testY);
+        accuracyTest = testAccurate(weight1, weight2, weight3, testX, testY);
         System.out.println("Testing accuracy: " + accuracyTest);
 
         // End time
         long endTime = System.currentTimeMillis();
         System.out.println("Total time: " + ((endTime - startTime) / 1000) + " seconds");
 
-        fileWrite(weight0, "weight0.txt");
         fileWrite(weight1, "weight1.txt");
         fileWrite(weight2, "weight2.txt");
         fileWrite(weight3, "weight3.txt");
@@ -137,8 +134,7 @@ public class Prog3 {
      * @param testX test features X
      * @param testY test output Y
      */
-    private static double testAccurate(double[][] weight0, double[][] weight1, double[][] weight2, double[][] weight3, double[][] testX, double[] testY) {
-        double[] h0 = new double[15];
+    private static double testAccurate(double[][] weight1, double[][] weight2, double[][] weight3, double[][] testX, double[] testY) {
         double[] h1 = new double[7];
         double[] h2 = new double[3];
         double output;
@@ -147,19 +143,10 @@ public class Prog3 {
         int count = 0;
 
         for (int k = 0; k < testSize; k++) {
-            // h0
-            for (int i = 0; i < 15; i++) {
-                for (int j = 0; j < 22; j++) {
-                    temp += testX[k][j] * weight0[j][i];
-                }
-                h0[i] = sigmoid(temp);
-                temp = 0;
-            }
-
             // h1
             for (int i = 0; i < 7; i++) {
-                for (int j = 0; j < 15; j++) {
-                    temp += h0[j] * weight1[j][i];
+                for (int j = 0; j < 22; j++) {
+                    temp += testX[k][j] * weight1[j][i];
                 }
                 h1[i] = sigmoid(temp);
                 temp = 0;
@@ -207,9 +194,8 @@ public class Prog3 {
      * @param trainY training output Y
      * @return The accuracy of the training set
      */
-    private static double ANN(double[][] weight0, double[][] weight1, double[][] weight2, double[][] weight3, double[][] trainX, double[] trainY) {
+    private static double ANN(double[][] weight1, double[][] weight2, double[][] weight3, double[][] trainX, double[] trainY) {
         // Hidden Layer
-        double[] h0 = new double[15];
         double[] h1 = new double[7];
         double[] h2 = new double[3];
         double output;
@@ -218,7 +204,6 @@ public class Prog3 {
         double delta1;
         double[] delta2 = new double[3];
         double[] delta3 = new double[7];
-        double[] delta4 = new double[15];
         double accurate = 0;
 
         int worstCount = 0;
@@ -229,32 +214,14 @@ public class Prog3 {
         while ((worstCount < stop) && (epoch < max)) {        // End if doing worst by the worstCount >= STOP or epoch is greater than max
             // Forward
             for (int k = 0; k < trainSize; k++) {
-                // h0
-                for (int i = 0; i < 15; i++) {
-                    for (int j = 0; j < 22; j++) {
-                        temp += trainX[k][j] * weight0[j][i];
-                    }
-                    h0[i] = sigmoid(temp);
-                    temp = 0;
-                }
-
                 // h1
                 for (int i = 0; i < 7; i++) {
-                    for (int j = 0; j < 15; j++) {
-                        temp += h0[j] * weight1[j][i];
+                    for (int j = 0; j < 22; j++) {
+                        temp += trainX[k][j] * weight1[j][i];
                     }
                     h1[i] = sigmoid(temp);
                     temp = 0;
                 }
-
-//                // h1
-//                for (int i = 0; i < 7; i++) {
-//                    for (int j = 0; j < 22; j++) {
-//                        temp += trainX[k][j] * weight1[j][i];
-//                    }
-//                    h1[i] = sigmoid(temp);
-//                    temp = 0;
-//                }
 
                 // h2
                 for (int i = 0; i < 3; i++) {
@@ -296,20 +263,6 @@ public class Prog3 {
                         }
                     }
 
-//                    // delta3 and weight1
-//                    double sum;
-//                    for (int i = 0; i < 7; i++) {
-//                        sum = 0;
-//                        for (int j = 0; j < 3; j++) {
-//                            sum += delta2[j] * weight2[i][j];
-//                        }
-//                        delta3[i] = h1[i] * (1 - h1[i]) * sum;
-//                        for (int j = 0; j < 22; j++) {
-//                            weight1[j][i] = weight1[j][i] + (learnRate * delta3[i] * h1[i]);
-//                        }
-//                    }
-
-                    // delta3 and weight1
                     // delta3 and weight1
                     double sum;
                     for (int i = 0; i < 7; i++) {
@@ -318,20 +271,8 @@ public class Prog3 {
                             sum += delta2[j] * weight2[i][j];
                         }
                         delta3[i] = h1[i] * (1 - h1[i]) * sum;
-                        for (int j = 0; j < 15; j++) {
-                            weight1[j][i] = weight1[j][i] + (learnRate * delta3[i] * h1[i]);
-                        }
-                    }
-
-                    // delta4 and weight0
-                    for (int i = 0; i < 15; i++) {
-                        sum = 0;
-                        for (int j = 0; j < 7; j++) {
-                            sum += delta3[j] * weight1[i][j];
-                        }
-                        delta4[i] = h0[i] * (1 - h0[i]) * sum;
                         for (int j = 0; j < 22; j++) {
-                            weight0[j][i] = weight0[j][i] + (learnRate * delta4[i] * h0[i]);
+                            weight1[j][i] = weight1[j][i] + (learnRate * delta3[i] * h1[i]);
                         }
                     }
                 }
@@ -357,10 +298,8 @@ public class Prog3 {
                 if (epoch % 20000 == 0) {
                     learnRate = learnRate * 0.90;
                     System.out.println(learnRate);
-                    printWeight(weight0, weight1, weight2, weight3);
+                    printWeight(weight1, weight2, weight3);
                 }
-
-
             }
 
         }
@@ -451,15 +390,7 @@ public class Prog3 {
      * @param weight2 w2
      * @param weight3 w3
      */
-    private static void printWeight(double[][] weight0, double[][] weight1, double[][] weight2, double[][] weight3) {
-        System.out.println("\n-----Weight 0-----");
-        for (double[] aWeight0 : weight0) {
-            for (double anAWeight0 : aWeight0) {
-                System.out.format("%6.3f ", anAWeight0);
-            }
-            System.out.println();
-        }
-
+    private static void printWeight(double[][] weight1, double[][] weight2, double[][] weight3) {
         System.out.println("\n-----Weight 1-----");
         for (double[] aWeight1 : weight1) {
             for (double anAWeight1 : aWeight1) {
